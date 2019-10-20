@@ -1,0 +1,20 @@
+{
+  "dark": {
+    "dark_mode_on": "true",
+    "gtk_theme": "Mojave-dark-solid",
+    "icon_theme": "korla",
+    "tilix_theme": "dark",
+    "plank_theme": "macOS Mojave Night",
+    "wallpaper": "/home/alembiewski/Pictures/mojave/mojave_dynamic_16.jpeg",
+    "sublime_theme": "Gravity"
+  },
+  "light": {
+    "dark_mode_on": "false",
+    "gtk_theme": "Mojave-light-solid",
+    "icon_theme": "korla-light-panel",
+    "tilix_theme": "light",
+    "plank_theme": "macOS Mojave Day",
+    "wallpaper": "/home/alembiewski/Pictures/mojave/mojave_dynamic_8.jpeg",
+    "sublime_theme": "Reverse Gravity"
+  }
+}
