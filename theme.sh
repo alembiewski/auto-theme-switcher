@@ -1,11 +1,9 @@
 #!/bin/bash
 
-set -x
-
 PID=$(pgrep gnome-session)
 export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | tr '\0' '\n'| cut -d= -f2-)
 
-declare -A dark light
+declare -A dark light DAY_TIME_RANGE
 
 CONFIG_FOLDER="${HOME}/.config"
 THEME_SETTINGS_FILE="${CONFIG_FOLDER}/theme-settings.json"
@@ -13,7 +11,19 @@ CURRENT_THEME_FLAG=${CONFIG_FOLDER}/current_theme
 AUTO_SWITCH_THEME_FLAG=${CONFIG_FOLDER}/auto_switch_theme
 SUBLIME_CONFIG_FILE=~/.config/sublime-text-3/Packages/User/Preferences.sublime-settings
 
-# initialize settings
+DAY_TIME_RANGE["start"]="08:00"
+DAY_TIME_RANGE["end"]="16:59"
+
+WALLPAPER_FILE="${HOME}/Pictures/mojave/mojave_dynamic_%index%.jpeg"
+WALLPAPER_MAX_INDEX=16
+
+# generate time ranges for dynamic wallpaper
+TIME_RANGES=( $(seq -f "%02g:00" -s " " 07 22) )
+
+current_theme=$(cat ${CURRENT_THEME_FLAG}) 
+current_time=$(date +%H:%M)
+
+# initialize theme settings
 while IFS== read key value; do
     light["$key"]="${value}"
 done < <(jq -r '.light | to_entries | .[] | .key + "=" + .value ' ${THEME_SETTINGS_FILE})
@@ -22,27 +32,13 @@ while IFS== read key value; do
     dark["$key"]="${value}"
 done < <(jq -r '.dark | to_entries | .[] | .key + "=" + .value ' ${THEME_SETTINGS_FILE})
 
-DAY_TIME_RANGE["start"]="08:00"
-DAY_TIME_RANGE["end"]="16:59"
-
-WALLPAPER_FILE="${HOME}/Pictures/mojave/mojave_dynamic_%index%.jpeg"
-WALLPAPER_MAX_INDEX=16
-
-# generate time ranges for wallpaper switching 
-TIME_RANGES=( $(seq -f "%02g:00" -s " " 07 22) )
-
-current_theme=$(cat ${CURRENT_THEME_FLAG}) 
-current_time=$(date +%H:%M)
-
 function set_appearance()
-
 {
     echo "Applying $1 theme..."
 
     var=$(declare -p "$1")
     eval "declare -A theme_props="${var#*=}
 
-    # handle wallpaper 
     if [[ "$2" == "fixed" ]]; then
         set_wallpaper ${theme_props[wallpaper]} 
     else
@@ -102,14 +98,14 @@ function main()
         light | dark)
             # disable auto theme
             [[ -f ${AUTO_SWITCH_THEME_FLAG} ]] && rm ${AUTO_SWITCH_THEME_FLAG}
-            set_appearance "$1" "fixed"
+            set_appearance "$1" fixed
             ;;
         time-based)
             if [[ -f ${AUTO_SWITCH_THEME_FLAG} ]]; then
                 if [[ "$current_time" > ${DAY_TIME_RANGE["start"]} ]] && [[ ! "$current_time" > ${DAY_TIME_RANGE["end"]} ]]; then
-                    set_appearance light "auto" 
+                    set_appearance light auto 
                 else
-                    set_appearance dark "auto"
+                    set_appearance dark auto
                 fi
             fi
             ;;
