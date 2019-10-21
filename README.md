@@ -1,6 +1,7 @@
 # Automatic theme switcher
 
 Set of scripts to customize the appearance of a desktop.
+Tested on Ubuntu 19.04 with Budgie desktop.
 
 The script applies a set of predefined themes and properties for the following components:
 
@@ -12,7 +13,7 @@ The script applies a set of predefined themes and properties for the following c
 - Budgie panel 'Dark mode'
 - Wallpaper
 
-Properties for light and dark appearance are defined inside [theme.sh](theme.sh)
+Properties for light and dark appearance are defined inside [theme-settings.json](theme-settings.json)
 
 ### Usage
 ```
